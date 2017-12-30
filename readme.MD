@@ -11,8 +11,8 @@
 
 # Notebooks
 
-* [Permanent employees analysis](http://wpinvestigative.github.io/federal_employees/employment.html) - Comparing the employee bodycount for Trump and Obama in their first nine months in office (December - September)
-* [Separations: Quit and Retired](http://wpinvestigative.github.io/federal_employees/separations.html) - Comparing employees who have quit or retired under the first six months of Trump and Obama.
+* [Permanent employees analysis](http://wpinvestigative.github.io/federal_employees_trump_2017/employment.html) - Comparing the employee bodycount for Trump and Obama in their first nine months in office (December - September)
+* [Separations: Quit and Retired](http://wpinvestigative.github.io/federal_employees_2017/separations.html) - Comparing employees who have quit or retired under the first six months of Trump and Obama.
 
 # Shiny App
 

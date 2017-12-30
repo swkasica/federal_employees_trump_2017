@@ -12,7 +12,7 @@
 # Notebooks
 
 * [Permanent employees analysis](http://wpinvestigative.github.io/federal_employees/employment.html) - Comparing the employee bodycount for Trump and Obama in their first nine months in office (December - September)
-* [Comparing economic conditions in Jersey City](http://wpinvestigative.github.io/federal_employees/separations.html) - Comparing employees who have quit or retired under the first six months of Trump and Obama.
+* [Separations: Quit and Retired](http://wpinvestigative.github.io/federal_employees/separations.html) - Comparing employees who have quit or retired under the first six months of Trump and Obama.
 
 # Shiny App
 

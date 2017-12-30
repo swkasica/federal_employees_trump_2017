@@ -2,6 +2,8 @@
 
 # Data
 
+Most data sets from the U.S. Office of Personnel Management [raw datasets page](https://www.opm.gov/Data/) except for one data set which was no longer listed on the page but was recovered thanks to the Internet Archive. 
+
 -----
 
 * `agencies_summary.csv` - exported summary data for all agencies and departments

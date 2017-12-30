@@ -2,7 +2,7 @@
 
 # Data
 
-Most data sets from the U.S. Office of Personnel Management [raw datasets page](https://www.opm.gov/Data/) except for one data set which was no longer listed on the page but was recovered thanks to the Internet Archive. 
+Most data sets are from the U.S. Office of Personnel Management [raw datasets page](https://www.opm.gov/Data/) except for one (Dec 2008) which was no longer listed on but was recovered thanks to the Internet Archive. 
 
 -----
 

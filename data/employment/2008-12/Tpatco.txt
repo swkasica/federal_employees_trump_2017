@@ -1,0 +1,8 @@
+1Professional      
+2Administrative    
+3Technical         
+4Clerical          
+5Other White Collar
+6Blue Collar       
+9Unspecified       
+

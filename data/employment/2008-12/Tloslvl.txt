@@ -1,0 +1,12 @@
+ALess than 1 year
+B1 - 2 years     
+C3 - 4 years     
+D5 - 9 years     
+E10 - 14 years   
+F15 - 19 years   
+G20 - 24 years   
+H25 - 29 years   
+I30 - 34 years   
+J35 years or more
+ZUnspecified     
+

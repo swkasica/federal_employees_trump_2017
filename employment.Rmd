@@ -1,0 +1,521 @@
+---
+title: "Permanent employees analysis"
+author: "Andrew Ba Tran"
+date: "12/18/2017"
+output:
+  html_document:
+    code_folding: hide
+---
+   
+This analysis seeks to compare the body count of federal employees for President Trump's first nine months in office (That's the most recent data currently available) compared to President Obama in that same time frame.
+
+It was part of the story: [How the Trump era is changing federal bureaucracy](https://www.washingtonpost.com/politics/how-the-trump-era-is-changing-the-federal-bureaucracy/2017/12/30/8d5149c6-daa7-11e7-b859-fb0995360725_story.html). 
+
+Other data and analysis scripts can be found in the **[wpinvestigative](https://github.com/wpinvestigative/federal_employees_trump_2017)** Github repo.
+
+The analysis for this story is based on raw data from the U.S. Office of Personnel Managament [Employment Cubes](https://www.opm.gov/Data/) and seeks to focus on permanent employees (so excluding seasonal and appointed positions) in an effort to normalize the figures.
+
+```{r setup, warning=F, message=F}
+# Loading libraries
+library(tidyverse)
+library(readr)
+library(lubridate)
+library(knitr)
+library(DT)
+
+# Downloading Trump's December raw data (12/2016)
+# The raw employment figures is more than 100 mb so it cannot be uploaded to Github
+
+if (!file.exists("data/employment/2016-12/FACTDATA_DEC2016.TXT")) {
+  trump_dec_dir <- "data/employment/2016-12/"
+  dir.create(trump_dec_dir, showWarnings = F)
+  temp <- tempfile()
+  download.file("https://www.opm.gov/Data/Files/491/17cace4b-452f-46c7-9274-fb7e16b67a81.zip",temp)
+  unzip(temp, exdir=trump_dec_dir, overwrite=T)
+  unlink(temp)
+}
+
+# Importing Trump's December raw data
+dec_16 <- read.table("data/employment/2016-12/FACTDATA_DEC2016.txt", header= TRUE, sep = ",", quote = "\"") 
+
+# Bringing in agency and department data
+dtagy_dec_16 <- read.table("data/employment/2016-12/DTagy.txt", header= TRUE, sep = ",", quote = "\"") #agency info table
+
+# Bringing in work status data
+wkstat_dec_16 <- read.table("data/employment/2016-12/DTwkstat.txt", header= TRUE, sep = ",", quote = "\"") 
+
+# Joining the raw data with the supplemental tables
+dec_16 <- left_join(dec_16, dtagy_dec_16)
+dec_16 <- left_join(dec_16, wkstat_dec_16)
+
+# Creating a new column with just the first two letters in the department abbreviation (makes it easier to join with data later on)
+dec_16$two <- substr(dec_16$AGYT, 0, 2)
+
+# Cleaning up the department names
+dec_16$AGYT <- gsub(".*-", "", dec_16$AGYT)
+dec_16$AGYSUBT <- gsub(".*-", "", dec_16$AGYSUBT)
+
+# Prepping the data for December to be joined with the most-recent September data
+dec_16_filtered <- dec_16 %>% 
+# Filter the permanent classification for employees
+    filter(TOA=="10" |
+         TOA=="15" |
+         TOA=="30" |
+         TOA=="32" |
+         TOA=="35" |
+         TOA=="36" |
+         TOA=="38" |
+         TOA=="50" |
+         TOA=="55") %>% 
+  select(AGYSUB, LOC, OCC, PATCO, PPGRD, GSEGRD, SALLVL, WORKSCH, TOA,  AGELVL, LOSLVL, EMPLOYMENT, 
+         LOS, AGYSUBT, AGYT, AGYTYPT, two) %>% 
+  mutate(Date="December",President="Trump" )
+
+
+# This isn't being displayed but this calculates the same as the above but with no filter
+dec_16_raw <- dec_16 %>% 
+  select(AGYSUB, LOC, OCC, PATCO, PPGRD, GSEGRD, SALLVL, WORKSCH, TOA,  AGELVL, LOSLVL, EMPLOYMENT, 
+         LOS, AGYSUBT, AGYT, AGYTYPT, two) %>% 
+  mutate(Date="December",President="Trump" )
+
+
+# Downloading Trump's September raw data (09/2017)
+
+if (!file.exists("data/employment/2017-9/FACTDATA_SEP2017.TXT")) {
+  trump_sep_dir <- "data/employment/2017-9/"
+  dir.create(trump_sep_dir, showWarnings = F)
+  temp <- tempfile()
+  download.file("https://www.opm.gov/Data/Files/522/7a0bf199-6c16-4131-92d1-485b18f7878a.zip",temp)
+  unzip(temp, exdir=trump_sep_dir, overwrite=T)
+  unlink(temp)
+}
+
+# Bringing in September for Trump data
+sep_17 <- read.table("data/employment/2017-9/FACTDATA_SEP2017.txt", header= TRUE, sep = ",", quote = "\"") 
+
+# Bringing in department/agency data
+dtagy_sep_17 <- read.table("data/employment/2017-9/DTagy.txt", header= TRUE, sep = ",", quote = "\"") 
+
+# Bringing in work status data
+wkstat_sep_17 <- read.table("data/employment/2017-9/DTwkstat.txt", header= TRUE, sep = ",", quote = "\"") 
+
+sep_17 <- left_join(sep_17, dtagy_sep_17)
+sep_17 <- left_join(sep_17, wkstat_sep_17)
+
+# Creating a new column with just the first two letters in the department abbreviation (makes it easier to join with data later on)
+sep_17$two <- substr(sep_17$AGYT, 0, 2)
+
+# Cleaning up the department/agency names
+sep_17$AGYT <- gsub(".*-", "", sep_17$AGYT)
+sep_17$AGYSUBT <- gsub(".*-", "", sep_17$AGYSUBT)
+
+# Prepping the data for September to be joined with the December data
+sep_17_filtered <- sep_17 %>% 
+# Filter the permanent classification for employees
+  filter(TOA=="10" |
+         TOA=="15" |
+         TOA=="30" |
+         TOA=="32" |
+         TOA=="35" |
+         TOA=="36" |
+         TOA=="38" |
+         TOA=="50" |
+         TOA=="55") %>% 
+  select(AGYSUB, LOC, OCC, PATCO, PPGRD, GSEGRD, SALLVL, WORKSCH, TOA,  AGELVL, LOSLVL, EMPLOYMENT, 
+         LOS, AGYSUBT, AGYT, AGYTYPT, two) %>% 
+  mutate(Date="September",President="Trump" )
+
+# Unfiltered table just because
+sep_17_raw <- sep_17 %>% 
+  select(AGYSUB, LOC, OCC, PATCO, PPGRD, GSEGRD, SALLVL, WORKSCH, TOA,  AGELVL, LOSLVL, EMPLOYMENT, 
+         LOS, AGYSUBT, AGYT, AGYTYPT, two) %>% 
+  mutate(Date="September",President="Trump" )
+
+# Downloading Obama's December raw data (12/2008)
+
+if (!file.exists("data/employment/2008-12/FACTDATA_Dec2008.TXT")) {
+  obama_dec_dir <- "data/employment/2008-12/"
+  dir.create(obama_dec_dir, showWarnings = F)
+  temp <- tempfile()
+  download.file("https://web.archive.org/web/20150610051705/www.opm.gov/Data/Files/35/53fbe0c4-7d12-4ebe-8035-bd1e3507fe27.zip",temp)
+  unzip(temp, exdir=obama_dec_dir, overwrite=T)
+  unlink(temp)
+}
+
+# Bringing in December for Obama data
+# NOTE: The data set for this was different from the other data sets in that it was fixed width
+# instead of read.table() we use read_fwf()
+
+dec_08 <- read_fwf(
+  file="data/employment/2008-12/FACTDATA_Dec2008.TXT",
+  fwf_widths(c(4,2,4,1,5,2,1,1,2,1,1,1,1,7,5)))
+
+# Setting up the column names
+colnames(dec_08) <- c("AGYSUB", "LOC", "OCC", "PATCO", "PPGRD", "GSEGRD", "SALLVL", "WORKSCH", "TOA", "GENDER", "AGELVL", "LOSLVL", "EMPLOYMENT", "SALARY", "LOS")
+
+# Creating a new column based on the Permanent designations
+dec_08$type <- ifelse(dec_08$TOA=="10" |
+                      dec_08$TOA=="15" |
+                      dec_08$TOA=="30" |
+                      dec_08$TOA=="32" |
+                        dec_08$TOA=="36" |
+                        dec_08$TOA=="38" |
+                        dec_08$TOA=="50" |
+                        dec_08$TOA=="55", "Permanent", "Nope")
+
+# Bringing in agency identification data
+dtagy_dec_08 <- read_fwf(
+  file="data/employment/2008-12/Tagysub.txt",
+  fwf_widths(c(2,2, 4,1,NA)))
+
+# Setting up the column names
+colnames(dtagy_dec_08) <- c("AGY", "Number", "AGYSUB", "Extra", "AGYSUBT")
+
+# Deleting an extra column
+dtagy_dec_08$Extra <- NULL
+
+# Joining the raw December 2008 data with the supllemental agency info data
+dec_08 <- left_join(dec_08, dtagy_dec_08)
+
+# Downloading Obama's September raw data (9/2009)
+
+if (!file.exists("data/employment/2009-9/FACTDATA_SEP2009.TXT")) {
+  obama_sep_dir <- "data/employment/2009-9/"
+  dir.create(obama_sep_dir, showWarnings = F)
+  temp <- tempfile()
+  download.file("https://www.opm.gov/Data/Files/26/f0a8eef6-a0b5-4015-a2f4-6597f1ca3ae7.zip",temp)
+  unzip(temp, exdir=obama_sep_dir, overwrite=T)
+  unlink(temp)
+}
+
+# Compile September for Obama from raw data
+# We're back to the other normal structured data
+# Same as the September and December data sets for Trump, so I'll skip the notes
+
+sep_09 <- read.table("data/employment/2009-9/FACTDATA_SEP2009.txt", header= TRUE, sep = ",", quote = "\"") 
+dtagy_sep_09 <- read.table("data/employment/2009-9/DTagy.txt", header= TRUE, sep = ",", quote = "\"") #agency info table
+wkstat_sep_09 <- read.table("data/employment/2009-9/DTwkstat.txt", header= TRUE, sep = ",", quote = "\"") 
+
+sep_09 <- left_join(sep_09, dtagy_sep_09)
+sep_09 <- left_join(sep_09, wkstat_sep_09)
+
+sep_09$two <- substr(sep_09$AGYT, 0, 2)
+sep_09$AGYT <- gsub(".*-", "", sep_09$AGYT)
+sep_09$AGYSUBT <- gsub(".*-", "", sep_09$AGYSUBT)
+
+sep_09_filtered <- sep_09 %>%
+                filter(TOA=="10" |
+                 TOA=="15" |
+                 TOA=="30" |
+                 TOA=="32" |
+                 TOA=="35" |
+                 TOA=="36" |
+                 TOA=="38" |
+                 TOA=="50" |
+                 TOA=="55") %>% 
+  select(AGYSUB, LOC, OCC, PATCO, PPGRD, GSEGRD, SALLVL, WORKSCH, TOA,  AGELVL, LOSLVL, EMPLOYMENT, 
+         LOS, AGYSUBT, AGYT, AGYTYPT, two) %>% 
+  mutate(Date="September",President="Obama" )
+
+sep_09_raw <- sep_09 %>%
+  select(AGYSUB, LOC, OCC, PATCO, PPGRD, GSEGRD, SALLVL, WORKSCH, TOA,  AGELVL, LOSLVL, EMPLOYMENT, 
+         LOS, AGYSUBT, AGYT, AGYTYPT, two) %>% 
+  mutate(Date="September",President="Obama" )
+
+# Alright, some agency and department info was left out of the December 2008 data 
+# So we're using the agency/department info from the December 2009 data instead
+
+# Creating a dataframe of agencies and departments in December 2009
+obama_agencies <- select(sep_09, AGYSUB, AGY, AGYT, AGYSUBT, AGYTYPT) %>% 
+  unique()
+
+# Joining that dataframe to the December 2008 data
+dec_08 <- left_join(dec_08, obama_agencies)
+dec_08$two <- dec_08$AGY
+
+
+# Prepping the data to join with the September data
+dec_08_filtered <- subset(dec_08, type!="Nope")
+dec_08_filtered <- dec_08_filtered %>%
+  select(AGYSUB, LOC, OCC, PATCO, PPGRD, GSEGRD, SALLVL, WORKSCH, TOA,  AGELVL, LOSLVL, EMPLOYMENT, 
+         LOS, AGYSUBT, AGYT, AGYTYPT, two) %>% 
+  mutate(Date="December",President="Obama" )
+
+# Gotta clean up the department names a bit
+dec_08_filtered_not_na <- subset(dec_08_filtered, !is.na(AGYT))
+
+dec_08_filtered_na <- subset(dec_08_filtered, is.na(AGYT))
+
+dec_08_filtered_na$AGYT <- NULL
+dec_08_filtered_na$AGYTYPT <- NULL
+obama_agencies_selected <- select(obama_agencies, two=AGY, AGYT, AGYTYPT) %>% unique
+
+dec_08_filtered_na <- left_join(dec_08_filtered_na, obama_agencies_selected) %>% 
+  select(AGYSUB, LOC, OCC, PATCO, PPGRD, GSEGRD, SALLVL, WORKSCH, TOA, AGELVL, LOSLVL, EMPLOYMENT, LOS, AGYSUBT, AGYT, AGYTYPT, two, Date, President)
+
+dec_08_filtered <- rbind(dec_08_filtered_na, dec_08_filtered_not_na)
+
+# Creating an alternative datframe with the raw data
+dec_08_raw <- dec_08 %>%
+  select(AGYSUB, LOC, OCC, PATCO, PPGRD, GSEGRD, SALLVL, WORKSCH, TOA,  AGELVL, LOSLVL, EMPLOYMENT, 
+         LOS, AGYSUBT, AGYT, AGYTYPT, two) %>% 
+  mutate(Date="December",President="Obama" )
+
+# Gotta clean up the department names a bit
+dec_08_raw_not_na <- subset(dec_08_filtered, !is.na(AGYT))
+
+dec_08_raw_na <- subset(dec_08_filtered, is.na(AGYT))
+
+dec_08_raw_na$AGYT <- NULL
+dec_08_raw_na$AGYTYPT <- NULL
+obama_agencies_selected <- select(obama_agencies, two=AGY, AGYT, AGYTYPT) %>% unique
+
+dec_08_raw_na <- left_join(dec_08_raw_na, obama_agencies_selected) %>% 
+  select(AGYSUB, LOC, OCC, PATCO, PPGRD, GSEGRD, SALLVL, WORKSCH, TOA, AGELVL, LOSLVL, EMPLOYMENT, LOS, AGYSUBT, AGYT, AGYTYPT, two, Date, President)
+
+dec_08_raw <- rbind(dec_08_raw_na, dec_08_raw_not_na)
+
+# Alright, data's been brought in individually
+
+# Let's clean up the agency names
+
+# Get the unique columns for agency code and agency name for each dataframe
+dec_08_agysubt <- select(dec_08, AGYSUB, AGYSUBT) %>% unique()
+sep_09_agysubt <- select(sep_09, AGYSUB, AGYSUBT) %>% unique()
+dec_16_agysubt <- select(dec_16, AGYSUB, AGYSUBT) %>% unique()
+sep_17_agysubt <- select(sep_17, AGYSUB, AGYSUBT) %>% unique()
+
+# Combine them all but only take the first instance of the agency code
+# This way there's a universal list of codes and agency names
+# (Because agency names change year to year, like with abbreviations, depending on the whims of OPM)
+
+agysubt <- rbind(dec_16_agysubt, sep_17_agysubt, dec_08_agysubt, sep_09_agysubt) %>% 
+  unique() %>% 
+  group_by(AGYSUB) %>% 
+  filter(row_number()==1)
+
+# Prepping the old dataframes by removing the Agency Name column
+# And then bringing in the new universal Agency Names dataframe
+dec_08_filtered$AGYSUBT <- NULL
+dec_08_filtered <- left_join(dec_08_filtered, agysubt)
+sep_09_filtered$AGYSUBT <- NULL
+sep_09_filtered <- left_join(sep_09_filtered, agysubt)
+dec_16_filtered$AGYSUBT <- NULL
+dec_16_filtered <- left_join(dec_16_filtered, agysubt)
+sep_17_filtered$AGYSUBT <- NULL
+sep_17_filtered <- left_join(sep_17_filtered, agysubt)
+
+# Now, let's join the adjusted presidential bodycounts dataframes at their commonality
+
+# Appending the Trump and Obama permanent employment dataframes
+total_so_far <- rbind(dec_08_filtered, sep_09_filtered, dec_16_filtered, sep_17_filtered)
+
+# Appending the Trump and Obama raw employment dataframes
+raw_so_far <- rbind(dec_08_raw, sep_09_raw, dec_16_raw, sep_17_raw)
+
+# Aggregating the data. 
+# Counting up the number of employees by month and president
+# Permanent employees
+total_summary <- total_so_far %>% 
+  group_by(Date, President) %>% 
+  count() %>% 
+  spread(Date, n) 
+
+# Manual adjusments for Unspecified workers in Permanent and Non-Permanent category
+total_summary[2,3] <- total_summary[2,3] + 18 
+total_summary[2,2] <- total_summary[2,2] + 19 
+total_summary[1,3] <- total_summary[1,3] + 26 
+#total_summary[1,2] <- total_summary[2,2] + ?? 
+
+total_summary <- total_summary %>% 
+  mutate(Difference=September-December, `Percent change`=round((September-December)/December*100,2))
+
+# Raw employees
+raw_summary <-raw_so_far %>% 
+  group_by(Date, President) %>% 
+  count() %>% 
+  spread(Date, n) %>% 
+  mutate(Difference=September-December, `Percent change`=round((September-December)/December*100,2)) 
+```
+
+# Change in permanent full time employees
+
+In the first nine months in office, government under Obama grew by 68,000 people— or 4 percent.
+
+Trump saw a drop of 16,000 permanent employees during that same time frame. Even though Trump started out with more government employees, the workforce shrank by .8 percent. That's the first time that's happened since Clinton.
+
+```{r table1}
+kable(total_summary)
+```
+
+
+```{r table3, warning=F, message=F}
+
+o_agency_summary_raw <- raw_so_far %>% 
+  group_by(two, AGYT, AGYSUBT, Date, President) %>% 
+  count() %>% 
+  spread(Date, n) %>% 
+  mutate(Difference=September-December, `Percent change`=round((September-December)/December*100,2)) %>% 
+  select(two, Agency=AGYT, Department=AGYSUBT, President, Difference, `Percent change`) %>% 
+  filter(President=="Obama") %>% 
+  ungroup() %>% 
+  select(two, Agency, Department, `Obama diff`=Difference, `Obama percent change`=`Percent change`)
+
+
+t_agency_summary_raw <- raw_so_far %>% 
+  group_by(two, AGYT, AGYSUBT, Date, President) %>% 
+  count() %>% 
+  spread(Date, n) %>% 
+  mutate(Difference=September-December, `Percent change`=round((September-December)/December*100,2)) %>% 
+  select(two, Agency=AGYT, Department=AGYSUBT, President, Difference, `Percent change`) %>% 
+  filter(President=="Trump")  %>% 
+  ungroup() %>% 
+  select(two, Agency, Department, `Trump diff`=Difference, `Trump percent change`=`Percent change`)
+
+agency_summary_raw <- full_join(o_agency_summary_raw, t_agency_summary_raw) %>% 
+  filter(!is.na(`Obama diff`) & !is.na(`Trump diff`)) %>% 
+  arrange(`Trump diff`, `Trump percent change`)
+
+#datatable(agency_summary_raw, filter='top')
+
+```
+
+# Permanent employees by agency
+
+```{r table4, warning=F, message=F}
+
+o_agency_summary_total <- total_so_far %>% 
+  group_by(two, AGYT, AGYSUBT, Date, President) %>% 
+  count() %>% 
+  spread(Date, n) %>% 
+  mutate(Difference=September-December, `Percent change`=round((September-December)/December*100,2))  %>% 
+  select(two, Agency=AGYT, Department=AGYSUBT, President, Difference, `Percent change`) %>% 
+  filter(President=="Obama") %>% 
+  ungroup() %>% 
+  select(two, Agency, Department, `Obama diff`=Difference, `Obama percent change`=`Percent change`)
+
+t_agency_summary_total <- total_so_far %>% 
+  group_by(two, AGYT, AGYSUBT, Date, President) %>% 
+  count() %>% 
+  spread(Date, n) %>% 
+  mutate(Difference=September-December, `Percent change`=round((September-December)/December*100,2))  %>% 
+  select(two, Agency=AGYT, Department=AGYSUBT, President, Difference, `Percent change`) %>% 
+  filter(President=="Trump") %>% 
+  ungroup() %>% 
+  select(two, Agency, Department, `Trump diff`=Difference, `Trump percent change`=`Percent change`)
+
+
+agency_summary_total <- full_join(o_agency_summary_total, t_agency_summary_total) %>% 
+#  filter(!is.na(`Obama diff`) & !is.na(`Trump diff`)) %>% 
+  arrange(`Trump diff`, `Trump percent change`)
+
+datatable(agency_summary_total, filter='top')
+```
+
+
+```{r table5, warning=F, message=F}
+raw_so_far2 <- raw_so_far
+raw_so_far2$AGYT <- ifelse(raw_so_far2$AGYT=="DEPARTMENT OF THE ARMY", "DEPARTMENT OF DEFENSE", raw_so_far2$AGYT)
+raw_so_far2$AGYT <- ifelse(raw_so_far2$AGYT=="DEPARTMENT OF THE AIR FORCE", "DEPARTMENT OF DEFENSE", raw_so_far2$AGYT)
+raw_so_far2$AGYT <- ifelse(raw_so_far2$AGYT=="DEPARTMENT OF THE NAVY", "DEPARTMENT OF DEFENSE", raw_so_far2$AGYT)
+
+
+o_agency_summary_raw <- raw_so_far2 %>% 
+  #mutate(AGYT=gsub("-.*", "", AGYT)) %>% 
+  group_by(AGYT, Date, President) %>% 
+  count() %>% 
+  spread(Date, n) %>% 
+  mutate(Difference=September-December, `Percent change`=round((September-December)/December*100,2)) %>% 
+  filter(President=="Obama") %>% 
+  ungroup() %>% 
+  select(Agency=AGYT, `Obama diff`=Difference, `Obama percent change`=`Percent change`)
+
+t_agency_summary_raw <- raw_so_far2 %>% 
+  #mutate(AGYT=gsub("-.*", "", AGYT)) %>% 
+  group_by(AGYT, Date, President) %>% 
+  count() %>% 
+  spread(Date, n) %>% 
+  mutate(Difference=September-December, `Percent change`=round((September-December)/December*100,2)) %>% 
+  filter(President=="Trump") %>% 
+  ungroup() %>% 
+  select(Agency=AGYT, `Trump diff`=Difference, `Trump percent change`=`Percent change`)
+
+agency_summary_raw <- full_join(o_agency_summary_raw, t_agency_summary_raw) %>% 
+  filter(!is.na(`Obama diff`) & !is.na(`Trump diff`)) %>% 
+  arrange(`Trump diff`, `Trump percent change`)
+
+#datatable(agency_summary_raw, filter='top')
+
+```
+
+# Permanent employees by department (Cabinet level only)
+
+This table filters out the Cabinet-level agencies (so 15 out of 80+) and allows for comparison between the changes in employment between Obama and Trump.
+
+```{r table6, warning=F, message=F}
+total_so_far2 <- total_so_far
+total_so_far2$AGYT <- ifelse(total_so_far2$AGYT=="DEPARTMENT OF THE ARMY", "DEPARTMENT OF DEFENSE", total_so_far2$AGYT)
+total_so_far2$AGYT <- ifelse(total_so_far2$AGYT=="DEPARTMENT OF THE AIR FORCE", "DEPARTMENT OF DEFENSE", total_so_far2$AGYT)
+total_so_far2$AGYT <- ifelse(total_so_far2$AGYT=="DEPARTMENT OF THE NAVY", "DEPARTMENT OF DEFENSE", total_so_far2$AGYT)
+
+o_agency_summary_total <- total_so_far2 %>% 
+  #mutate(AGYT=gsub("-.*", "", AGYT)) %>% 
+  filter(AGYTYPT=="Cabinet Level Agencies") %>% 
+  group_by(AGYT, Date, President) %>% 
+  count() %>% 
+  spread(Date, n) %>% 
+  mutate(Difference=September-December, `Percent change`=round((September-December)/December*100,2)) %>% 
+  filter(President=="Obama") %>% 
+  ungroup() %>% 
+  select(Agency=AGYT, `Obama diff`=Difference, `Obama percent change`=`Percent change`)
+
+t_agency_summary_total <- total_so_far2 %>% 
+  #mutate(AGYT=gsub("-.*", "", AGYT)) %>% 
+  filter(AGYTYPT=="Cabinet Level Agencies") %>% 
+  group_by(AGYT, Date, President) %>% 
+  count() %>% 
+  spread(Date, n) %>% 
+  mutate(Difference=September-December, `Percent change`=round((September-December)/December*100,2)) %>% 
+  filter(President=="Trump") %>% 
+  ungroup() %>% 
+  select(Agency=AGYT, `Trump diff`=Difference, `Trump percent change`=`Percent change`)
+
+agency_summary_total <- full_join(o_agency_summary_total, t_agency_summary_total) %>% 
+  filter(!is.na(`Obama diff`) & !is.na(`Trump diff`)) %>% 
+  arrange(`Trump diff`, `Trump percent change`)
+
+datatable(agency_summary_total, filter='top')
+```
+
+# Permanent employees by agency size
+
+The table below breaks out the agency by size category to show the scope of change.
+
+```{r agency, warning=F, message=F}
+o_agency_summary_size <- total_so_far %>% 
+  group_by(AGYTYPT, Date, President) %>% 
+  count() %>% 
+  spread(Date, n) %>% 
+  mutate(Difference=September-December, `Percent change`=round((September-December)/December*100,2))  %>% 
+  select(`Agency size`=AGYTYPT, President, Difference, `Percent change`) %>% 
+  filter(President=="Obama") %>% 
+  ungroup() %>% 
+  select(`Agency size`, `Obama diff`=Difference, `Obama percent change`=`Percent change`)
+
+t_agency_summary_size <- total_so_far %>% 
+  group_by(AGYTYPT, Date, President) %>% 
+  count() %>% 
+  spread(Date, n) %>% 
+  mutate(Difference=September-December, `Percent change`=round((September-December)/December*100,2))  %>% 
+  select(`Agency size`=AGYTYPT, President, Difference, `Percent change`) %>% 
+  filter(President=="Trump") %>% 
+  ungroup() %>% 
+  select(`Agency size`, `Trump diff`=Difference, `Trump percent change`=`Percent change`)
+
+
+agency_summary_size <- full_join(o_agency_summary_size, t_agency_summary_size) %>% 
+  filter(!is.na(`Obama diff`) & !is.na(`Trump diff`)) %>% 
+  arrange(`Trump diff`, `Trump percent change`)
+
+datatable(agency_summary_size, filter='top')
+```

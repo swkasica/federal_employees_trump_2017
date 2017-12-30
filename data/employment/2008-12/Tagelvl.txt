@@ -1,0 +1,13 @@
+ALess than 20
+B20-24       
+C25-29       
+D30-34       
+E35-39       
+F40-44       
+G45-49       
+H50-54       
+I55-59       
+J60-64       
+K65 or more  
+ZUnspecified 
+

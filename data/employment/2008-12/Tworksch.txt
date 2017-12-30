@@ -1,0 +1,13 @@
+FF - Full-time Nonseasonal           
+GG - Full-time Seasonal              
+HH - Full-time On-call               
+II - Intermittent Nonseasonal        
+JJ - Intermittent Seasonal           
+PP - Part-time Nonseasonal           
+QQ - Part-time Seasonal              
+RR - Part-time On-call               
+SS - Part-time Job Sharer Nonseasonal
+TT - Part-time Job Sharer Seasonal   
+** - Unspecified                     
+BB - Baylor Plan                     
+

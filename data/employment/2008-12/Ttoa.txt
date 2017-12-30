@@ -1,0 +1,20 @@
+1010-Competitive Service - Career                   
+1515-Competitive Service - Career-Conditional       
+3030-Excepted Service - Schedule A                  
+3232-Excepted Service - Schedule B                  
+3434-Excepted Service - Schedule C                  
+3636-Excepted Service - Executive                   
+3838-Excepted Service - Other                       
+5050-Senior Executive Service - Career              
+5555-Senior Executive Service - Non-Career          
+99**-Unspecified                                    
+2020-Competitive Service                            
+4040-Excepted Service - Schedule A                  
+4242-Excepted Service - Schedule B                  
+4444-Excepted Service - Schedule C                  
+4646-Excepted Service - Executive                   
+4848-Excepted Service - Other                       
+6060-Senior Executive Service - Limited Term        
+6565-Senior Executive Service - Limited Emergency   
+****-Unspecified                                    
+

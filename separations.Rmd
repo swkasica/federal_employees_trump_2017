@@ -1,0 +1,384 @@
+---
+title: "Separations: Quit and Retired"
+author: "Andrew Ba Tran"
+date: "11/22/2017"
+output:
+  html_document:
+    code_folding: hide
+---
+
+This analysis looks at the number of people who quit or retired between January and June (the most recent figures available) for both President Trump and President Obama in their first six months in office.
+
+It was part of the story: [How the Trump era is changing federal bureaucracy](https://www.washingtonpost.com/politics/how-the-trump-era-is-changing-the-federal-bureaucracy/2017/12/30/8d5149c6-daa7-11e7-b859-fb0995360725_story.html). 
+
+Other data and analysis scripts can be found in the **[wpinvestigative](https://github.com/wpinvestigative/federal_employees_trump_2017)** Github repo.
+
+This story's analysis was based on raw data from the U.S. Office of Personnel Managament [Employment Cubes](https://www.opm.gov/Data/) and aggregated data exported from the [Fedscope explorer](https://www.fedscope.opm.gov) (Because raw data is only available annually). 
+
+This analysis only counts permanent employees (excluding seasonal and appointed positions) and also excludes separations categorized as transfers, terminations, deaths, reduction in force, and other reasons for separation to limit the employees.
+
+
+```{r setup, warning=F, message=F}
+# Loading libraries
+library(tidyverse)
+library(DT)
+
+# We need to bring in total employment figures under Obama when he started so we have a starting point for comparing separations
+
+
+# Downloading Obama's December raw data (12/2008)
+
+if (!file.exists("data/employment/2008-12/FACTDATA_Dec2008.TXT")) {
+  obama_dec_dir <- "data/employment/2008-12/"
+  dir.create(obama_dec_dir, showWarnings = F)
+  temp <- tempfile()
+  download.file("https://web.archive.org/web/20150610051705/www.opm.gov/Data/Files/35/53fbe0c4-7d12-4ebe-8035-bd1e3507fe27.zip",temp)
+  unzip(temp, exdir=obama_dec_dir, overwrite=T)
+  unlink(temp)
+}
+
+# Importing the data
+dec_08 <- read_fwf(
+  file="data/employment/2008-12/FACTDATA_Dec2008.TXT",
+  fwf_widths(c(4,2,4,1,5,2,1,1,2,1,1,1,1,7,5)))
+
+colnames(dec_08) <- c("AGYSUB", "LOC", "OCC", "PATCO", "PPGRD", "GSEGRD", "SALLVL", "WORKSCH", "TOA", "GENDER", "AGELVL", "LOSLVL", "EMPLOYMENT", "SALARY", "LOS")
+
+# Permanent: 10, 15, 30, 32, 35, 36, 38, 50, 55, **
+dec_08$type <- ifelse(dec_08$TOA=="**" |
+                      dec_08$TOA=="10" |
+                      dec_08$TOA=="15" |
+                      dec_08$TOA=="30" |
+                      dec_08$TOA=="32" |
+                      dec_08$TOA=="35" |
+                        dec_08$TOA=="36" |
+                        dec_08$TOA=="38" |
+                        dec_08$TOA=="50" |
+                        dec_08$TOA=="55", "Permanent", "Nope")
+
+dtagy_dec_08 <- read_fwf(
+  file="data/employment/2008-12/Tagysub.txt",
+  fwf_widths(c(2,2, 4,1,NA)))
+
+colnames(dtagy_dec_08) <- c("AGY", "Number", "AGYSUB", "Extra", "AGYSUBT")
+
+dtagy_dec_08$Extra <- NULL
+
+dec_08 <- left_join(dec_08, dtagy_dec_08)
+
+# Going through the motions of importing Obama's September 2009 total employment figures
+# Why? Because we need the department data to join with the December 2008 data (It's missing)
+# We'll discard the overall data but keep a dataframe of the department names and abbreviations
+
+
+# Downloading Obama's September raw data (9/2009)
+
+if (!file.exists("data/employment/2009-9/FACTDATA_SEP2009.TXT")) {
+  obama_sep_dir <- "data/employment/2009-9/"
+  dir.create(obama_sep_dir, showWarnings = F)
+  temp <- tempfile()
+  download.file("https://www.opm.gov/Data/Files/26/f0a8eef6-a0b5-4015-a2f4-6597f1ca3ae7.zip",temp)
+  unzip(temp, exdir=obama_sep_dir, overwrite=T)
+  unlink(temp)
+}
+
+# Importing data
+sep_09 <- read.table("data/employment/2009-9/FACTDATA_SEP2009.txt", header= TRUE, sep = ",", quote = "\"") 
+dtagy_sep_09 <- read.table("data/employment/2009-9/DTagy.txt", header= TRUE, sep = ",", quote = "\"") #agency info table
+wkstat_sep_09 <- read.table("data/employment/2009-9/DTwkstat.txt", header= TRUE, sep = ",", quote = "\"") 
+
+sep_09 <- left_join(sep_09, dtagy_sep_09)
+sep_09 <- left_join(sep_09, wkstat_sep_09)
+
+sep_09$two <- substr(sep_09$AGYT, 0, 2)
+sep_09$AGYT <- gsub(".*-", "", sep_09$AGYT)
+sep_09$AGYSUBT <- gsub(".*-", "", sep_09$AGYSUBT)
+
+sep_09_filtered <- sep_09 %>%
+  filter(TOA=="**" |
+         TOA=="10" |
+         TOA=="15" |
+         TOA=="30" |
+         TOA=="32" |
+         TOA=="35" |
+         TOA=="36" |
+         TOA=="38" |
+         TOA=="50" |
+         TOA=="55") %>% 
+  select(AGYSUB, LOC, OCC, PATCO, PPGRD, GSEGRD, SALLVL, WORKSCH, TOA,  AGELVL, LOSLVL, EMPLOYMENT, 
+         LOS, AGYSUBT, AGYT, two) %>% 
+  mutate(Date="September",President="Obama" )
+
+sep_09_raw <- sep_09 %>%
+  select(AGYSUB, LOC, OCC, PATCO, PPGRD, GSEGRD, SALLVL, WORKSCH, TOA,  AGELVL, LOSLVL, EMPLOYMENT, 
+         LOS, AGYSUBT, AGYT, two) %>% 
+  mutate(Date="September",President="Obama" )
+
+# Alright, we went through all that trouble for these lines below
+obama_agencies <- select(sep_09, AGYSUB, AGY, AGYT, AGYSUBT) %>% 
+  unique()
+
+# Going back to the December 2008 data and joining it to the obama_agencies dataframe
+dec_08 <- left_join(dec_08, obama_agencies)
+dec_08$two <- dec_08$AGY
+
+# Filtering out the non-permanent employees
+dec_08_filtered <- subset(dec_08, type!="Nope")
+dec_08_filtered <- dec_08_filtered %>% 
+  select(AGYSUB, LOC, OCC, PATCO, PPGRD, GSEGRD, SALLVL, WORKSCH, TOA,  AGELVL, LOSLVL, EMPLOYMENT, 
+         LOS, AGYSUBT, AGYT, two) %>% 
+  mutate(Date="December",President="Obama" )
+
+
+# Gotta clean up the department names a bit
+dec_08_filtered_not_na <-  subset(dec_08_filtered, !is.na(AGYT))
+
+dec_08_filtered_na <- subset(dec_08_filtered, is.na(AGYT))
+
+dec_08_filtered_na$AGYT <- NULL
+obama_agencies_selected <- select(obama_agencies, two=AGY, AGYT)  %>% 
+  unique()
+
+dec_08_filtered_na <- left_join(dec_08_filtered_na, obama_agencies_selected) %>% 
+  select(AGYSUB, LOC, OCC, PATCO, PPGRD, GSEGRD, SALLVL, WORKSCH, TOA, AGELVL, LOSLVL, EMPLOYMENT, LOS, AGYSUBT, AGYT, two, Date, President)
+
+dec_08_filtered <- rbind(dec_08_filtered_na, dec_08_filtered_not_na)
+
+
+# Counting up the employees and relabeling things so we know these are Obama figures
+dec_08_aggregated_sub <- dec_08_filtered %>% 
+  group_by(AGYSUB, AGYSUBT, AGYT) %>% 
+  summarize(Obama_Total=n()) %>% 
+  select(AGYSUB, Obama_Total)
+
+dec_08_aggregated_sub <- data.frame(dec_08_aggregated_sub)
+dec_08_aggregated_sub$AGYSUBT <- NULL
+
+dec_08_aggregated <- dec_08_filtered %>% 
+  group_by(two) %>% 
+  summarize(Obama_Total=n()) %>% 
+  select(two, Obama_Total)
+
+# Downloading Obama Separations in 2009 data
+
+# Downloading Obama's September raw data (9/2009)
+
+if (!file.exists("data/separations/2009/SEPDATA_FY2009.TXT")) {
+  obama_sep_dir <- "data/separations/2009/"
+  dir.create(obama_sep_dir, showWarnings = F)
+  temp <- tempfile()
+  download.file("https://web.archive.org/web/20161209105315/www.opm.gov/Data/Files/80/74d87a22-c1d8-48ea-8d93-11604be750e6.zip",temp)
+  unzip(temp, exdir=obama_sep_dir, overwrite=T)
+  unlink(temp)
+}
+
+# Bringing in Obama separations data
+Y2009 <- read.table("data/separations/2009/SEPDATA_FY2009.txt", header= TRUE, sep = ",", quote = "\"")
+
+# Bringing in additional tables that identify agencies and categorization of separations
+DTagy <- read.table("data/separations/2009/DTagy.txt", header= TRUE, sep = ",", quote = "\"") #agency info table
+DTsep <- read.table("data/separations/2009/DTsep.txt", header= TRUE, sep = ",", quote = "\"")
+# Bringing in additional table that identify work schedule 
+DTwrksch <- read.table("data/separations/2009/DTwrksch.txt", header= TRUE, sep = ",", quote ="\"")
+
+# Combining the original data with the additional tables
+Y2009 <- left_join(Y2009, DTagy)
+Y2009 <- left_join(Y2009, DTsep)
+Y2009 <- left_join(Y2009, DTwrksch)
+
+# Creating some new tables so it'll be easier to group up departments down the line
+Y2009$agency_name <- substr(Y2009$AGYT, 4, nchar(as.character(Y2009$AGYT)))
+
+Y2009$agency_sub <- substr(Y2009$AGYSUBT, 6, nchar(as.character(Y2009$AGYSUBT)))
+Y2009$two <- substr(Y2009$AGYSUB, 1, 2)
+
+# Reformating some columns for easier filtering later on
+Y2009$SEPT <- as.character(Y2009$SEPT)
+Y2009$WORKSCHT <- as.character(Y2009$WORKSCHT)
+
+# Cleaning up some categories so it'll be easier to aggregate when joined with future data
+Y2009$separation <- ifelse(grepl("Retirement", Y2009$SEPT), "Retirement", Y2009$SEPT)
+Y2009$separation <- ifelse(grepl("Termination", Y2009$separation), "Termination or Removal", Y2009$separation)
+
+# Because the Obama separations data is for the entire year, we have to filter it so it matches with the data we pull for Trump
+# While we're at it, let's also filter out non-permanent employees
+
+Y2009_half <- filter(Y2009, 
+                  EFDATE==200812 |
+                  EFDATE==200901 | 
+                  EFDATE==200902 |
+                  EFDATE==200903 |
+                  EFDATE==200904 |
+                  EFDATE==200905 |
+                  EFDATE==200906) %>% 
+             filter(TOA=="**" |
+                           TOA=="10" |
+                           TOA=="15" |
+                           TOA=="30" |
+                           TOA=="32" |
+                           TOA=="35" |
+                           TOA=="36" |
+                           TOA=="38" |
+                           TOA=="50" |
+                           TOA=="55") 
+
+
+# Grouping analysis time
+Y2009_agency <- Y2009_half %>% 
+  group_by(agency_name, EFDATE, separation) %>% 
+  count() %>% 
+  group_by(agency_name, separation) %>% 
+  spread(EFDATE, n)
+
+Y2009_agency_total <- Y2009_half %>% 
+  group_by(two,agency_name, separation) %>% 
+  summarize(Obama_Separations=n()) %>% 
+  left_join(dec_08_aggregated) %>% 
+  mutate(Obama_Percent=round(Obama_Separations/Obama_Total*100,2)) %>% 
+  filter(Obama_Total >= Obama_Separations)
+
+Y2009_agency_sub <- Y2009_half %>% 
+  group_by(AGYSUB, agency_name, agency_sub, EFDATE, separation)  %>% 
+  summarize(Obama_Separations=n()) %>% 
+  left_join(dec_08_aggregated_sub)
+
+# Repeating the process above but for Trump
+
+# Bringing in December employment Trump data
+
+dec_16 <- read.table("data/employment/2016-12/FACTDATA_DEC2016.txt", header= TRUE, sep = ",", quote = "\"") 
+dtagy_dec_16 <- read.table("data/employment/2016-12/DTagy.txt", header= TRUE, sep = ",", quote = "\"") #agency info table
+wkstat_dec_16 <- read.table("data/employment/2016-12/DTwkstat.txt", header= TRUE, sep = ",", quote = "\"") 
+
+dec_16 <- left_join(dec_16, dtagy_dec_16)
+dec_16 <- left_join(dec_16, wkstat_dec_16)
+
+dec_16$two <- substr(dec_16$AGYT, 0, 2)
+dec_16$AGYT <- gsub(".*-", "", dec_16$AGYT)
+dec_16$AGYSUBT <- gsub(".*-", "", dec_16$AGYSUBT)
+
+# Filtering out non-permanent employees
+dec_16_filtered <- dec_16 %>% 
+              filter(TOA=="**" |
+                 TOA=="10" |
+                 TOA=="15" |
+                 TOA=="30" |
+                 TOA=="32" |
+                 TOA=="35" |
+                 TOA=="36" |
+                 TOA=="38" |
+                 TOA=="50" |
+                 TOA=="55") %>% 
+  select(AGYSUB, LOC, OCC, PATCO, PPGRD, GSEGRD, SALLVL, WORKSCH, TOA,  AGELVL, LOSLVL, EMPLOYMENT, 
+         LOS, AGYSUBT, AGYT, two) %>% 
+  mutate(Date="December",President="Trump" )
+
+
+dec_16_aggregated_sub <- dec_16_filtered %>% 
+  group_by(AGYSUB, AGYSUBT, AGYT) %>% 
+  summarize(Trump_Total=n()) %>% 
+  select(AGYSUB, Trump_Total)
+
+dec_16_aggregated_sub <- data.frame(dec_16_aggregated_sub)
+dec_16_aggregated_sub$AGYSUBT <- NULL
+
+dec_16_aggregated <- dec_16_filtered %>% 
+  group_by(two) %>% 
+  summarize(Trump_Total=n()) %>% 
+  select(two, Trump_Total)
+
+# Bringing in January - June separations Trump data exported from Fedscope summaries
+
+trump <- read_csv("data/separations/trump_separations_thru_june.csv")
+trump$two <- substr(trump$agency_name, 1,2)
+
+trump_aggregated <- group_by(trump, two, separation) %>% 
+  summarize(Trump_Separations=sum(Trump_Separations))  %>% 
+  left_join(dec_16_aggregated) %>% 
+  mutate(Trump_Percent=round(Trump_Separations/Trump_Total*100,2)) 
+
+# Joining the Trump data with the Obama data
+presidents <- full_join(trump_aggregated, Y2009_agency_total) %>% 
+  select(two, agency_name, separation, Trump_Separations, Obama_Separations, Trump_Total, Obama_Total, Trump_Percent, Obama_Percent) %>% 
+  filter(separation=="Quit" | separation=="Retirement") %>% 
+  group_by(two, agency_name) %>% 
+  summarize(Trump_Separations=sum(Trump_Separations, na.rm=T), Obama_Separations=sum(Obama_Separations, na.rm=T),
+            Trump_Total=mean(Trump_Total, na.rm=T), Obama_Total=mean(Obama_Total, na.rm=T)) %>% 
+  mutate(Trump_Percent = round(Trump_Separations/ Trump_Total*100,2), Obama_Percent=round(Obama_Separations/Obama_Total*100,2)) 
+```
+
+# Comparing Trump to Obama
+
+More than 70,000 federal employees quit or retired during President Trump's first six months in office compared to 50,000 under President Obama. However, Trump started out with more employees compared to Obama. 
+
+Still, that's a higher rate of separations (3.6 percent) compared to Obama (2.8 percent). 
+
+```{r summary, warning=F, message=F}
+
+president_summary <- presidents %>% 
+  ungroup() %>% 
+  select(Trump_Separations, Obama_Separations, Trump_Total, Obama_Total, -two) %>% 
+  summarize(`Trump quits and retires`=sum(Trump_Separations, na.rm=T), `Obama quits and retires`=sum(Obama_Separations, na.rm=T), `Trump total employees`=sum(Trump_Total, na.rm=T), `Obama total employees`=sum(Obama_Total, na.rm=T)) %>% 
+  mutate(`Trump percent of workforce quit or retired`=round(`Trump quits and retires`/`Trump total employees`*100,2), `Obama percent of workforce quit or retired`=round(`Obama quits and retires`/`Obama total employees`*100,2))
+
+datatable(president_summary)
+
+```
+
+# Drilling down into Departments
+
+So 71,000 is a small percent of the workforce, but if we look at specific agencies, then we can see how those numbers leaving can have a significant effect.
+
+More than 50 employees quit or retired from the Office of Management and Budget while Trump was in office— that's more than 10 percent of their workforce. In comparison, only eight employees (2 percent) left under Obama.
+
+Twice the percent of the workforce in the Department of Energy and the Department of Education quit or retired under Trump compared to Obama.
+
+```{r agencies, warning=F, message=F}
+drill_down <- presidents %>% 
+  filter(!is.na(Obama_Separations) & !is.na(Trump_Separations) & !is.na(Trump_Total) & !is.na(Obama_Total) & Trump_Percent<=100) %>%
+  select(-Trump_Total, -Obama_Total, -two)  %>% 
+  arrange(-Trump_Percent)
+
+datatable(drill_down, filter='top')
+```
+
+# Quit and retired as a percent of total separations
+
+This table aggregates the percent of workers by department who quit or retired out of all separations.
+
+For example, 89 percent of the workers in the Office of Management and Budget who separated from that department were categorized as quit or retired under Trump. Under Obama, that figure was 62 percent.
+
+Some notable agencies from this analysis include:
+
+* Securities and Exchange Commission (91 percent quit or retired under Trump compared to the 71 percent under Obama)
+* The Department of Veterans Affairs (90 percent quit or retired under Trump compared to the 75 percent under Obama)
+* Homeland Security (85 percent quit or retired under Trump compared to the 68 percent under Obama)
+
+```{r presidents_percent, warning=F, message=F}
+
+presidents_percent <- full_join(trump_aggregated, Y2009_agency_total) %>% 
+  select(two, agency_name, separation, Trump_Separations, Obama_Separations, -Trump_Total, -Obama_Total, -Trump_Percent, -Obama_Percent)
+
+presidents_percent$separation <- ifelse(presidents_percent$separation=="Quit" | presidents_percent$separation=="Retirement", "Quit or Retired", "Other")
+
+presidents_percent_sum <- presidents_percent %>% 
+  group_by(separation) %>% 
+  summarize(Trump_Separations=sum(Trump_Separations, na.rm=T), Obama_Separations=sum(Obama_Separations, na.rm=T)) %>% 
+  mutate(Trump_Percent=Trump_Separations/sum(Trump_Separations)*100, Obama_Percent=Obama_Separations/sum(Obama_Separations)*100)
+
+  presidents_percent <- presidents_percent %>% 
+    group_by(agency_name, separation) %>% 
+  summarize(trump_separations=sum(Trump_Separations, na.rm=T), obama_separations=sum(Obama_Separations, na.rm=T)) %>% 
+  mutate(trump_percent=round(trump_separations/sum(trump_separations)*100,2), obama_percent=round(obama_separations/sum(obama_separations)*100,2)) %>% 
+    filter(separation=="Quit or Retired") %>% 
+    filter(!is.na(trump_percent)) %>% 
+    arrange(-trump_separations, -trump_percent) %>% 
+    mutate(diff=trump_percent-obama_percent) %>% 
+    select(-separation)
+
+  datatable(presidents_percent, filter='top')
+```
+
+
+
+

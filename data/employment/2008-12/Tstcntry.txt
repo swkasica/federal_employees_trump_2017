@@ -1,0 +1,317 @@
+AAAA-ARUBA                                   
+ACAC-ANTIGUA AND BARBUDA                     
+AEAE-UNITED ARAB EMIRATES                    
+AFAF-AFGHANISTAN                             
+AGAG-ALGERIA                                 
+AJAJ-AZERBAIJAN                              
+ALAL-ALBANIA                                 
+AMAM-ARMENIA                                 
+ANAN-ANDORRA                                 
+AOAO-ANGOLA                                  
+AQAQ-AMERICAN SAMOA                          
+ARAR-ARGENTINA                               
+ASAS-AUSTRALIA                               
+ATAT-ASHMORE AND CARTIER ISLANDS             
+AUAU-AUSTRIA                                 
+AVAV-ANGUILLA                                
+AYAY-ANTARCTICA                              
+BABA-BAHRAIN                                 
+BBBB-BARBADOS                                
+BCBC-BOTSWANA                                
+BDBD-BERMUDA                                 
+BEBE-BELGIUM                                 
+BFBF-BAHAMAS, THE                            
+BGBG-BANGLADESH                              
+BHBH-BELIZE                                  
+BKBK-BOSNIA AND HERZEGOVINA                  
+BLBL-BOLIVIA                                 
+BMBM-BURMA                                   
+BNBN-BENIN                                   
+BOBO-BELARUS                                 
+BPBP-SOLOMON ISLANDS                         
+BQBQ-NAVASSA ISLAND                          
+BRBR-BRAZIL                                  
+BSBS-BASSAS DA INDIA                         
+BTBT-BHUTAN                                  
+BUBU-BULGARIA                                
+BVBV-BOUVET ISLAND                           
+BXBX-BRUNEI                                  
+BYBY-BURUNDI                                 
+CACA-CANADA                                  
+CBCB-CAMBODIA                                
+CDCD-CHAD                                    
+CECE-SRI LANKA                               
+CFCF-CONGO                                   
+CGCG-CONGO, DEMOCRATIC REPUBLIC OF THE       
+CHCH-CHINA                                   
+CICI-CHILE                                   
+CJCJ-CAYMAN ISLANDS                          
+CKCK-COCOS (KEELING) ISLANDS                 
+CMCM-CAMEROON                                
+CNCN-COMOROS                                 
+COCO-COLOMBIA                                
+CQCQ-NORTHERN MARIANA ISLANDS                
+CRCR-CORAL SEA ISLANDS                       
+CSCS-COSTA RICA                              
+CTCT-CENTRAL AFRICAN REPUBLIC                
+CUCU-CUBA                                    
+CVCV-CAPE VERDE                              
+CWCW-COOK ISLANDS                            
+CYCY-CYPRUS                                  
+DADA-DENMARK                                 
+DJDJ-DJIBOUTI                                
+DODO-DOMINICA                                
+DQDQ-JARVIS ISLAND                           
+DRDR-DOMINICAN REPUBLIC                      
+ECEC-ECUADOR                                 
+EGEG-EGYPT                                   
+EIEI-IRELAND                                 
+EKEK-EQUATORIAL GUINEA                       
+ENEN-ESTONIA                                 
+ERER-ERITREA                                 
+ESES-EL SALVADOR                             
+ETET-ETHIOPIA                                
+EUEU-EUROPA ISLAND                           
+EZEZ-CZECH REPUBLIC                          
+FGFG-FRENCH GUIANA                           
+FIFI-FINLAND                                 
+FJFJ-FIJI                                    
+FKFK-FALKLAND (ISLAS MALVINAS)               
+FMFM-MICRONESIA, FEDERATED STATES OF         
+FOFO-FAROE ISLANDS                           
+FPFP-FRENCH POLYNESIA                        
+FQFQ-BAKER ISLAND                            
+FRFR-FRANCE                                  
+FSFS-FRENCH SOUTHERN AND ANTARCTIC LANDS     
+GAGA-GAMBIA, THE                             
+GBGB-GABON                                   
+GGGG-GEORGIA                                 
+GHGH-GHANA                                   
+GIGI-GIBRALTAR                               
+GJGJ-GRENADA                                 
+GKGK-GUERNSEY                                
+GLGL-GREENLAND                               
+GMGM-GERMANY                                 
+GOGO-GLORIOSO ISLANDS                        
+GPGP-GUADELOUPE                              
+GQGQ-GUAM                                    
+GRGR-GREECE                                  
+GTGT-GUATEMALA                               
+GVGV-GUINEA                                  
+GYGY-GUYANA                                  
+GZGZ-GAZA STRIP                              
+HAHA-HAITI                                   
+HKHK-HONG KONG                               
+HMHM-HEARD ISLAND AND MCDONALD ISLANDS       
+HOHO-HONDURAS                                
+HQHQ-HOWLAND ISLAND                          
+HRHR-CROATIA                                 
+HUHU-HUNGARY                                 
+ICIC-ICELAND                                 
+IDID-INDONESIA                               
+IMIM-MAN, ISLE OF                            
+ININ-INDIA                                   
+IOIO-BRITISH INDIAN OCEAN TERRITORY          
+IPIP-CLIPPERTON ISLAND                       
+IRIR-IRAN                                    
+ISIS-ISRAEL                                  
+ITIT-ITALY                                   
+IVIV-COTE D'IVOIRE                           
+IZIZ-IRAQ                                    
+JAJA-JAPAN                                   
+JEJE-JERSEY                                  
+JMJM-JAMAICA                                 
+JNJN-JAN MAYEN                               
+JOJO-JORDAN                                  
+JQJQ-JOHNSTON ATOLL                          
+JUJU-JUAN DE NOVA ISLAND                     
+KEKE-KENYA                                   
+KGKG-KYRGYZSTAN                              
+KNKN-KOREA, DEMOCRATIC PEOPLE'S REPUBLIC OF  
+KQKQ-KINGMAN REEF                            
+KRKR-KIRIBATI                                
+KSKS-KOREA, REPUBLIC OF                      
+KTKT-CHRISTMAS ISLAND                        
+KUKU-KUWAIT                                  
+KZKZ-KAZAKHSTAN                              
+LALA-LAOS                                    
+LELE-LEBANON                                 
+LGLG-LATVIA                                  
+LHLH-LITHUANIA                               
+LILI-LIBERIA                                 
+LOLO-SLOVAKIA                                
+LQLQ-PALMYRA ATOLL                           
+LSLS-LIECHTENSTEIN                           
+LTLT-LESOTHO                                 
+LULU-LUXEMBOURG                              
+LYLY-LIBYA                                   
+MAMA-MADAGASCAR                              
+MBMB-MARTINIQUE                              
+MCMC-MACAU                                   
+MDMD-MOLDOVA                                 
+MFMF-MAYOTTE                                 
+MGMG-MONGOLIA                                
+MHMH-MONTSERRAT                              
+MIMI-MALAWI                                  
+MJMJ-MONTENEGRO                              
+MKMK-MACEDONIA                               
+MLML-MALI                                    
+MNMN-MONACO                                  
+MOMO-MOROCCO                                 
+MPMP-MAURITIUS                               
+MQMQ-MIDWAY ISLANDS                          
+MRMR-MAURITANIA                              
+MTMT-MALTA                                   
+MUMU-OMAN                                    
+MVMV-MALDIVES                                
+MXMX-MEXICO                                  
+MYMY-MALAYSIA                                
+MZMZ-MOZAMBIQUE                              
+NCNC-NEW CALEDONIA                           
+NENE-NIUE                                    
+NFNF-NORFOLK ISLAND                          
+NGNG-NIGER                                   
+NHNH-VANUATU                                 
+NINI-NIGERIA                                 
+NLNL-NETHERLANDS                             
+NONO-NORWAY                                  
+NPNP-NEPAL                                   
+NRNR-NAURU                                   
+NSNS-SURINAME                                
+NTNT-NETHERLANDS ANTILLES                    
+NUNU-NICARAGUA                               
+NZNZ-NEW ZEALAND                             
+PAPA-PARAGUAY                                
+PCPC-PITCAIRN ISLANDS                        
+PEPE-PERU                                    
+PFPF-PARACEL ISLANDS                         
+PGPG-SPRATLY ISLANDS                         
+PKPK-PAKISTAN                                
+PLPL-POLAND                                  
+PMPM-PANAMA                                  
+POPO-PORTUGAL                                
+PPPP-PAPUA NEW GUINEA                        
+PSPS-PALAU                                   
+PTPT-PORTUGUESE TIMOR                        
+PUPU-GUINEA-BISSAU                           
+QAQA-QATAR                                   
+RBRB-SERBIA                                  
+RERE-REUNION                                 
+RMRM-MARSHALL ISLANDS                        
+RORO-ROMANIA                                 
+RPRP-PHILIPPINES                             
+RQRQ-PUERTO RICO                             
+RSRS-RUSSIA                                  
+RWRW-RWANDA                                  
+SASA-SAUDI ARABIA                            
+SBSB-SAINT PIERRE AND MIQUELON               
+SCSC-SAINT KITTS AND NEVIS                   
+SESE-SEYCHELLES                              
+SFSF-SOUTH AFRICA                            
+SGSG-SENEGAL                                 
+SHSH-SAINT HELENA                            
+SISI-SLOVENIA                                
+SLSL-SIERRA LEONE                            
+SMSM-SAN MARINO                              
+SNSN-SINGAPORE                               
+SOSO-SOMALIA                                 
+SPSP-SPAIN                                   
+STST-SAINT LUCIA                             
+SUSU-SUDAN                                   
+SVSV-SVALBARD                                
+SWSW-SWEDEN                                  
+SXSX-SOUTH GEORGIA AND SOUTH SANDWICH ISLANDS
+SYSY-SYRIA                                   
+SZSZ-SWITZERLAND                             
+TDTD-TRINIDAD AND TOBAGO                     
+TETE-TROMELIN ISLAND                         
+THTH-THAILAND                                
+TITI-TAJIKISTAN                              
+TKTK-TURKS AND CAICOS ISLANDS                
+TLTL-TOKELAU                                 
+TNTN-TONGA                                   
+TOTO-TOGO                                    
+TPTP-SAO TOME AND PRINCIPE                   
+TSTS-TUNISIA                                 
+TTTT-EAST TIMOR                              
+TUTU-TURKEY                                  
+TVTV-TUVALU                                  
+TWTW-TAIWAN                                  
+TXTX-TURKMENISTAN                            
+TZTZ-TANZANIA                                
+UGUG-UGANDA                                  
+UKUK-UNITED KINGDOM                          
+UPUP-UKRAINE                                 
+USUS-SUPPRESSED (SEE DATA DEFINITIONS)       
+UVUV-BURKINA FASO                            
+UYUY-URUGUAY                                 
+UZUZ-UZBEKISTAN                              
+VCVC-SAINT VINCENT AND THE GRENADINES        
+VEVE-VENEZUELA                               
+VIVI-BRITISH VIRGIN ISLANDS                  
+VMVM-VIETNAM                                 
+VQVQ-VIRGIN ISLANDS                          
+VTVT-VATICAN CITY                            
+WAWA-NAMIBIA                                 
+WEWE-WEST BANK                               
+WFWF-WALLIS AND FUTUNA                       
+WIWI-WESTERN SAHARA                          
+WQWQ-WAKE ATOLL                              
+WSWS-SAMOA                                   
+WZWZ-SWAZILAND                               
+YMYM-YEMEN                                   
+ZAZA-ZAMBIA                                  
+ZIZI-ZIMBABWE                                
+0101-ALABAMA                                 
+0202-ALASKA                                  
+0404-ARIZONA                                 
+0505-ARKANSAS                                
+0606-CALIFORNIA                              
+0808-COLORADO                                
+0909-CONNECTICUT                             
+1010-DELAWARE                                
+1111-DISTRICT OF COLUMBIA                    
+1212-FLORIDA                                 
+1313-GEORGIA                                 
+1515-HAWAII                                  
+1616-IDAHO                                   
+1717-ILLINOIS                                
+1818-INDIANA                                 
+1919-IOWA                                    
+2020-KANSAS                                  
+2121-KENTUCKY                                
+2222-LOUISIANA                               
+2323-MAINE                                   
+2424-MARYLAND                                
+2525-MASSACHUSETTS                           
+2626-MICHIGAN                                
+2727-MINNESOTA                               
+2828-MISSISSIPPI                             
+2929-MISSOURI                                
+3030-MONTANA                                 
+3131-NEBRASKA                                
+3232-NEVADA                                  
+3333-NEW HAMPSHIRE                           
+3434-NEW JERSEY                              
+3535-NEW MEXICO                              
+3636-NEW YORK                                
+3737-NORTH CAROLINA                          
+3838-NORTH DAKOTA                            
+3939-OHIO                                    
+4040-OKLAHOMA                                
+4141-OREGON                                  
+4242-PENNSYLVANIA                            
+4444-RHODE ISLAND                            
+4545-SOUTH CAROLINA                          
+4646-SOUTH DAKOTA                            
+4747-TENNESSEE                               
+4848-TEXAS                                   
+4949-UTAH                                    
+5050-VERMONT                                 
+5151-VIRGINIA                                
+5353-WASHINGTON                              
+5454-WEST VIRGINIA                           
+5555-WISCONSIN                               
+5656-WYOMING                                 
+****-UNSPECIFIED                             
+

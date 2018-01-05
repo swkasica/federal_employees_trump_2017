@@ -7,15 +7,8 @@
 # About the folders in this repo
 
 * **[data](data)** - Raw and summarized data on employment and separations figures from the [U.S. Office of Personnel Management](https://www.fedscope.opm.gov/)
-* **[appointees](appointees)** - Shiny app to allow exploration status of Senate-approved appointees by agency
 
 # Notebooks
 
 * [Permanent employees analysis](http://wpinvestigative.github.io/federal_employees_trump_2017/employment.html) - Comparing the employee bodycount for Trump and Obama in their first nine months in office (December - September)
 * [Separations: Quit and Retired](http://wpinvestigative.github.io/federal_employees_2017/separations.html) - Comparing employees who have quit or retired under the first six months of Trump and Obama.
-
-# Shiny App
-
-* [Political Appointees Explorer](appointees) - Shiny app to allow exploration status of Senate-approved appointees by agency
-
-![Political Appointees Explorer screenshot](appointees_app_screenshot.png "Political Appointees Explorer")

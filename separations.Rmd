@@ -2,9 +2,9 @@
 title: "Separations: Quit and Retired"
 author: "Andrew Ba Tran"
 date: "11/22/2017"
-output:
-  html_document:
-    code_folding: hide
+#output:
+#  html_document:
+#    code_folding: hide
 ---
 
 This analysis looks at the number of people who quit or retired between January and June (the most recent figures available) for both President Trump and President Obama in their first six months in office.
@@ -17,7 +17,6 @@ This story's analysis was based on raw data from the U.S. Office of Personnel Ma
 
 This analysis only counts permanent employees (excluding seasonal and appointed positions) and also excludes separations categorized as transfers, terminations, deaths, reduction in force, and other reasons for separation to limit the employees.
 
-
 ```{r setup, warning=F, message=F}
 # Loading libraries
 library(tidyverse)
@@ -29,7 +28,7 @@ library(DT)
 # Downloading Obama's December raw data (12/2008)
 
 if (!file.exists("data/employment/2008-12/FACTDATA_Dec2008.TXT")) {
-  obama_dec_dir <- "data/employment/2008-12/"
+  obama_dec_dir <- "data/employment/2008-12"
   dir.create(obama_dec_dir, showWarnings = F)
   temp <- tempfile()
   download.file("https://web.archive.org/web/20150610051705/www.opm.gov/Data/Files/35/53fbe0c4-7d12-4ebe-8035-bd1e3507fe27.zip",temp)
@@ -43,6 +42,8 @@ dec_08 <- read_fwf(
   fwf_widths(c(4,2,4,1,5,2,1,1,2,1,1,1,1,7,5)))
 
 colnames(dec_08) <- c("AGYSUB", "LOC", "OCC", "PATCO", "PPGRD", "GSEGRD", "SALLVL", "WORKSCH", "TOA", "GENDER", "AGELVL", "LOSLVL", "EMPLOYMENT", "SALARY", "LOS")
+
+# Added by Steve, TOA means type of appointment
 
 # Permanent: 10, 15, 30, 32, 35, 36, 38, 50, 55, **
 dec_08$type <- ifelse(dec_08$TOA=="**" |
@@ -60,6 +61,8 @@ dtagy_dec_08 <- read_fwf(
   file="data/employment/2008-12/Tagysub.txt",
   fwf_widths(c(2,2, 4,1,NA)))
 
+# Added by Steve, AGYSUB means Agency Sub element
+
 colnames(dtagy_dec_08) <- c("AGY", "Number", "AGYSUB", "Extra", "AGYSUBT")
 
 dtagy_dec_08$Extra <- NULL
@@ -74,7 +77,7 @@ dec_08 <- left_join(dec_08, dtagy_dec_08)
 # Downloading Obama's September raw data (9/2009)
 
 if (!file.exists("data/employment/2009-9/FACTDATA_SEP2009.TXT")) {
-  obama_sep_dir <- "data/employment/2009-9/"
+  obama_sep_dir <- "data/employment/2009-9"
   dir.create(obama_sep_dir, showWarnings = F)
   temp <- tempfile()
   download.file("https://www.opm.gov/Data/Files/26/f0a8eef6-a0b5-4015-a2f4-6597f1ca3ae7.zip",temp)
@@ -164,7 +167,7 @@ dec_08_aggregated <- dec_08_filtered %>%
 # Downloading Obama's September raw data (9/2009)
 
 if (!file.exists("data/separations/2009/SEPDATA_FY2009.TXT")) {
-  obama_sep_dir <- "data/separations/2009/"
+  obama_sep_dir <- "data/separations/2009"
   dir.create(obama_sep_dir, showWarnings = F)
   temp <- tempfile()
   download.file("https://web.archive.org/web/20161209105315/www.opm.gov/Data/Files/80/74d87a22-c1d8-48ea-8d93-11604be750e6.zip",temp)
